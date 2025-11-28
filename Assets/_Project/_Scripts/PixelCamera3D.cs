@@ -13,6 +13,15 @@ public class PixelCamera3D : MonoBehaviour
 
     Camera _camera;
 
+    public float Zoom
+    {
+        get => _zoom;
+        set
+        {
+            _zoom = Mathf.Max(0.001f, value);
+        }
+    }
+
     void OnValidate()
     {
         ClampSettings();
