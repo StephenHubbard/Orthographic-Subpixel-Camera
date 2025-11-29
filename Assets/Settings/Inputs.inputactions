@@ -22,22 +22,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "RotateLeft",
-                    "type": "Button",
-                    "id": "f673fa82-3c0e-4aef-8721-329da6ff10c2",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "RotateRight",
-                    "type": "Button",
-                    "id": "7d88c542-b84d-44db-96dd-3202b0de2ebd",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "SpawnObject",
                     "type": "Button",
                     "id": "f31ae73b-3f8b-4f7d-922a-cc1df56abd04",
@@ -50,6 +34,14 @@
                     "type": "Button",
                     "id": "1d4fc8a4-e851-40b8-933d-576cfd29c4be",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Value",
+                    "id": "9a50a8f8-2cfc-4345-92b3-795943e27a5b",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 }
@@ -123,28 +115,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a73b2035-cae2-4d65-ad0c-9454a8e3d078",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RotateLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c9dc0e08-56f1-4521-ace7-73e7ecd9fab8",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RotateRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f97df3a4-89cb-4f9c-b570-3d3cbcbea175",
                     "path": "<Keyboard>/f",
                     "interactions": "",
@@ -164,6 +134,39 @@
                     "action": "ToggleSnap",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "faeb10ef-fff7-4fed-ba0d-5acd9984beb8",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "519f5bd2-6eee-41ec-8b58-6c4221ad0e18",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "2440b8a6-c488-4dd6-999f-5534edc4ddba",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

@@ -7,19 +7,32 @@ public class PixelCamera3D : MonoBehaviour
     [SerializeField] Vector2Int _referenceResolution = new Vector2Int(320, 180);
     [SerializeField] int _pixelsPerUnit = 16;
     [SerializeField] float _zoom = 1f;
-    
+    [SerializeField] Transform _mount;
+    [SerializeField] bool _snapToPixelGrid = true;
+
     public RenderTexture RenderTexture { get; private set; }
     public Vector2Int RenderResolution { get; private set; }
+    public float UnitsPerPixel { get; private set; }
+    public Vector2 PixelOffset { get; private set; }
 
     Camera _camera;
 
     public float Zoom
     {
         get => _zoom;
-        set
-        {
-            _zoom = Mathf.Max(0.001f, value);
-        }
+        set => _zoom = Mathf.Max(0.001f, value);
+    }
+
+    public Transform Mount
+    {
+        get => _mount;
+        set => _mount = value;
+    }
+
+    public bool SnapToPixelGrid
+    {
+        get => _snapToPixelGrid;
+        set => _snapToPixelGrid = value;
     }
 
     void OnValidate()
@@ -29,6 +42,8 @@ public class PixelCamera3D : MonoBehaviour
         UpdateRenderResolution();
         UpdateRenderTexture();
         UpdateCamera();
+        UpdatePixelGrid();
+        UpdateCameraTransform();
     }
 
     void Awake()
@@ -38,6 +53,8 @@ public class PixelCamera3D : MonoBehaviour
         UpdateRenderResolution();
         UpdateRenderTexture();
         UpdateCamera();
+        UpdatePixelGrid();
+        UpdateCameraTransform();
     }
 
     void Update()
@@ -46,6 +63,8 @@ public class PixelCamera3D : MonoBehaviour
         UpdateRenderResolution();
         UpdateRenderTexture();
         UpdateCamera();
+        UpdatePixelGrid();
+        UpdateCameraTransform();
     }
 
     void EnsureCameraReference()
@@ -102,5 +121,54 @@ public class PixelCamera3D : MonoBehaviour
         float orthoSize = (targetWorldHeight * 0.5f) / _zoom;
 
         _camera.orthographicSize = orthoSize;
+    }
+
+    void UpdatePixelGrid()
+    {
+        if (_camera == null) return;
+        if (RenderResolution.y <= 0) return;
+
+        float worldHeight = _camera.orthographicSize * 2f;
+        float unitsPerPixel = worldHeight / RenderResolution.y;
+
+        UnitsPerPixel = unitsPerPixel;
+
+        PixelGrid3D.SetDefault(unitsPerPixel, Quaternion.identity);
+    }
+
+    void UpdateCameraTransform()
+    {
+        if (_mount == null)
+        {
+            PixelOffset = Vector2.zero;
+            return;
+        }
+
+        Vector3 targetPosition = _mount.position;
+
+        if (!_snapToPixelGrid || !PixelGrid3D.HasDefault)
+        {
+            transform.position = targetPosition;
+            PixelOffset = Vector2.zero;
+            return;
+        }
+
+        Vector3 snappedPosition = PixelGrid3D.Default.SnapPosition(targetPosition);
+        transform.position = snappedPosition;
+
+        Vector3 deltaWorld = snappedPosition - targetPosition;
+
+        if (UnitsPerPixel <= 0f)
+        {
+            PixelOffset = Vector2.zero;
+            return;
+        }
+
+        Vector3 deltaLocal = transform.InverseTransformVector(deltaWorld);
+
+        float offsetX = -deltaLocal.x / UnitsPerPixel;
+        float offsetY = -deltaLocal.y / UnitsPerPixel;
+
+        PixelOffset = new Vector2(offsetX, offsetY);
     }
 }

@@ -59,11 +59,13 @@ public class PixelCameraViewportContainer3D : MonoBehaviour
         float scaleX = containerSize.x / res.x;
         float scaleY = containerSize.y / res.y;
         float scale = Mathf.Floor(Mathf.Min(scaleX, scaleY));
-
         if (scale < 1f) scale = 1f;
 
         RectTransform viewportRect = _viewport.GetComponent<RectTransform>();
+
         viewportRect.localScale = new Vector3(scale, scale, 1f);
-        viewportRect.anchoredPosition = Vector2.zero;
+
+        Vector2 pixelOffset = _pixelCamera.PixelOffset;
+        viewportRect.anchoredPosition = pixelOffset * scale;
     }
 }

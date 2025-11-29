@@ -10,17 +10,21 @@ public class PixelCameraController3D : MonoBehaviour
     [SerializeField] float _zoomStep = 0.25f;
     [SerializeField] float _minZoom = 0.25f;
     [SerializeField] float _maxZoom = 4f;
+    [SerializeField] bool _snapEnabled = true;
 
     Vector2 _panInput;
-    float _pendingTurn;
+    float _rotateInput;
     float _pendingZoomSteps;
 
     public PixelCamera3D PixelCamera => _pixelCamera;
+    public bool SnapEnabled => _snapEnabled;
 
     void Awake()
     {
         if (_pixelCamera == null)
             _pixelCamera = GetComponentInChildren<PixelCamera3D>();
+
+        ApplySnapState();
     }
 
     void Update()
@@ -37,7 +41,7 @@ public class PixelCameraController3D : MonoBehaviour
         Vector3 input = new Vector3(_panInput.x, 0f, _panInput.y);
 
         Vector3 forward = transform.forward; forward.y = 0f; forward.Normalize();
-        Vector3 right   = transform.right;   right.y = 0f;   right.Normalize();
+        Vector3 right = transform.right; right.y = 0f; right.Normalize();
 
         Vector3 worldMove = forward * input.z + right * input.x;
 
@@ -49,12 +53,10 @@ public class PixelCameraController3D : MonoBehaviour
 
     void Rotate()
     {
-        if (Mathf.Abs(_pendingTurn) <= 0f) return;
+        if (Mathf.Abs(_rotateInput) <= 0f) return;
 
-        float ang = _pendingTurn * _rotationSpeed * Time.deltaTime;
+        float ang = _rotateInput * _rotationSpeed * Time.deltaTime;
         transform.Rotate(0f, ang, 0f, Space.World);
-
-        _pendingTurn = 0f;
     }
 
     void Zoom()
@@ -70,7 +72,17 @@ public class PixelCameraController3D : MonoBehaviour
         _pendingZoomSteps -= direction;
     }
 
-    // ───── Input Actions (these names MUST match exactly) ─────
+    void ApplySnapState()
+    {
+        if (_pixelCamera != null)
+            _pixelCamera.SnapToPixelGrid = _snapEnabled;
+
+        foreach (PixelSnapper3D snapper in PixelSnapper3D.Instances)
+        {
+            if (snapper == null) continue;
+            snapper.SnapPositionEnabled = _snapEnabled;
+        }
+    }
 
     void OnPan(InputValue value)
     {
@@ -84,25 +96,18 @@ public class PixelCameraController3D : MonoBehaviour
             _pendingZoomSteps += Mathf.Sign(scroll.y);
     }
 
-    void OnRotateLeft()
+    void OnRotate(InputValue value)
     {
-        _pendingTurn -= 1f;
+        _rotateInput = value.Get<float>();
     }
 
-    void OnRotateRight()
-    {
-        _pendingTurn += 1f;
-    }
-
-    // optional
     void OnToggleSnap()
     {
-        Debug.Log("Toggle snap not implemented yet.");
+        _snapEnabled = !_snapEnabled;
+        ApplySnapState();
     }
 
-    // optional
     void OnSpawnObject()
     {
-        Debug.Log("Spawn object not implemented yet.");
     }
 }
